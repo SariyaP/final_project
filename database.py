@@ -10,7 +10,7 @@ with open(os.path.join(__location__, 'persons.csv')) as f:
     rows = csv.DictReader(f)
     for r in rows:
         persons.append(dict(r))
-print(persons)
+
 
 # add in code for a Database class
 class DB:
@@ -25,6 +25,7 @@ class DB:
             if table.table_name == table_name:
                 return table
         return None
+
 
 # add in code for a Table class
 class Table:
@@ -52,6 +53,7 @@ class Table:
 
     def insert(self, table):
         self.table.append(table)
+
 # modify the code in the Table class so that it supports the insert operation where an entry can be added to a list of dictionary
 
 # modify the code in the Table class so that it supports the update operation where an entry's value associated with a key can be updated

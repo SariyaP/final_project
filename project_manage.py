@@ -1,25 +1,52 @@
 # import database module
-
+import database
 # define a funcion called initializing
+import csv, os
 
+__location__ = os.path.realpath(
+    os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+login = []
+with open(os.path.join(__location__, 'login.csv')) as f:
+    rows = csv.DictReader(f)
+    for r in rows:
+        login.append(dict(r))
+print(login)
+
+my_db = database.DB()
 def initializing():
-    pass
 
 # here are things to do in this function:
 
     # create an object to read all csv files that will serve as a persistent state for this program
-
+    persons_table = database.Table('persons', database.persons)
+    login_table = database.Table('login', login)
+    project_table = database.Table('project', [])
+    advisor_request_table = database.Table('advisor', [])
+    member_request_table = database.Table('member', [])
     # create all the corresponding tables for those csv files
 
     # see the guide how many tables are needed
 
     # add all these tables to the database
-
+    my_db.insert(persons_table)
+    my_db.insert(login_table)
+    my_db.insert(project_table)
+    my_db.insert(advisor_request_table)
+    my_db.insert(member_request_table)
 
 # define a funcion called login
 
 def login():
-    pass
+    # login_info = my_db.search('login')
+    # print(login_info)
+    # username = str(input("Please input your username: "))
+    # password = str(input("Please input your password: "))
+    # for i in login_info:
+    #     if i['username'] == username and i['password'] == password:
+    #
+    #         return None
+
 
 # here are things to do in this function:
    # add code that performs a login task
