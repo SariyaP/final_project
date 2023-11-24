@@ -5,12 +5,13 @@ import csv, os
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-persons = []
-with open(os.path.join(__location__, 'persons.csv')) as f:
-    rows = csv.DictReader(f)
-    for r in rows:
-        persons.append(dict(r))
-
+def open_csv(name, file):
+    name = []
+    with open(os.path.join(__location__, f'{file}.csv')) as f:
+        rows = csv.DictReader(f)
+        for r in rows:
+            name.append(dict(r))
+    return name
 
 # add in code for a Database class
 class DB:
