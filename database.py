@@ -55,6 +55,16 @@ class Table:
     def insert(self, table):
         self.table.append(table)
 
+    def delete(self, key, value):
+        # for i in range(self.table):
+        #     if self.table[key] == value:
+        pass
+
+
+
+    def update(self, key, value):
+        self.table[key] = value
+
 # modify the code in the Table class so that it supports the insert operation where an entry can be added to a list of dictionary
 
 # modify the code in the Table class so that it supports the update operation where an entry's value associated with a key can be updated
