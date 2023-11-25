@@ -55,11 +55,16 @@ class Table:
     def insert(self, table):
         self.table.append(table)
 
-    def delete(self, key, value):
-        # for i in range(self.table):
-        #     if self.table[key] == value:
-        pass
-
+    def delete(self, value):
+        for i in range(len(self.table)):
+            if 'ID' in self.table:
+                if self.table[i]['ID'] == value:
+                    del self.table[i]
+                    break
+            else:
+                if self.table[i]['ProjectID'] == value:
+                    del self.table[i]
+                    break
 
 
     def update(self, key, value):

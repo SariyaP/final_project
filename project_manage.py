@@ -19,7 +19,6 @@ def initializing():
     my_db.insert(advisor)
     my_db.insert(member)
 
-
 def login():
     login_info = my_db.search('login')
     username = str(input("Please input your username: "))
@@ -36,6 +35,7 @@ def login():
         # returns [ID, role] if valid, otherwise returning None
 
 # define a function called exit
+
 def exit():
     pass
 
@@ -45,21 +45,24 @@ def exit():
    # writing out to a csv file given a list of dictionaries. See the link below for a tutorial on how to do this:
    
    # https://www.pythonforbeginners.com/basics/list-of-dictionaries-to-csv-in-python
+
+
 def table_edit(table_name):
     while True:
-        editing = my_db.search('table_name')
+        editing = my_db.search(table_name)
         print("What do you want to do with it?")
         print("1. Insert information", "2. Update information", "3. Delete information", "0. Exit", sep='\n')
         choice = input("Input your choice: ")
         if choice == "1":
-            editing.table.insert()
+            insert_information = input("")
+            editing.insert()
         elif choice == "2":
-            editing.table.update()
+            editing.update()
         elif choice == "3":
-            editing.table.delete()
-            # go edit the delete function first
+            editing.delete()
         elif choice == "0":
             break
+
 
 def table_access():
     while True:
@@ -72,9 +75,18 @@ def table_access():
               "0. Exit", sep='\n')
         choices = str(input('Input your choice: '))
         if choices == "1":
-            table_edit(login)
+            table_edit('login')
+        elif choices == "2":
+            table_edit('person')
+        elif choices == "3":
+            table_edit('project')
+        elif choices == "4":
+            table_edit('advisor')
+        elif choices == "5":
+            table_edit('member')
         elif choices == "0":
             break
+
 
 def admin():
     while True:
@@ -84,7 +96,7 @@ def admin():
         if choice == '1':
             table_access()
         elif choice == "0":
-            login()
+            break
 
 # make calls to the initializing and login functions defined above
 
