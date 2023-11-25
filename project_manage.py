@@ -54,12 +54,16 @@ def table_edit(table_name):
         print("1. Insert information", "2. Update information", "3. Delete information", "0. Exit", sep='\n')
         choice = input("Input your choice: ")
         if choice == "1":
-            insert_information = input("")
-            editing.insert()
+            insert_information = list(input("Enter information: "))
+            # check if it's a list for insertion
+            editing.insert(insert_information)
         elif choice == "2":
-            editing.update()
+            key_value = input("What key do you want to edit: ")
+            item_value = input("Change it to: ")
+            editing.update(key_value, item_value)
         elif choice == "3":
-            editing.delete()
+            delete_id = input("Enter Member ID or Project ID to delete: ")
+            editing.delete(delete_id)
         elif choice == "0":
             break
 
