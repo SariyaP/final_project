@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3fa43419-8c63-4e6d-b96b-5be8824f0d9e" name="Changes" comment="Adding more admin code and update more function to the table class">
+    <list default="true" id="3fa43419-8c63-4e6d-b96b-5be8824f0d9e" name="Changes" comment="Add delete function and more admin role">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TODO.md" beforeDir="false" afterPath="$PROJECT_DIR$/TODO.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/project_manage.py" beforeDir="false" afterPath="$PROJECT_DIR$/project_manage.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -39,6 +40,15 @@
       <option name="presentableId" value="Default" />
       <updated>1700399406855</updated>
     </task>
+    <task id="LOCAL-00001" summary="Add delete function and more admin role">
+      <option name="closed" value="true" />
+      <created>1700921067883</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1700921067883</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -51,5 +61,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Adding more admin code and update more function to the table class" />
+    <MESSAGE value="Add delete function and more admin role" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add delete function and more admin role" />
   </component>
 </project>

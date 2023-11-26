@@ -1,7 +1,11 @@
-**Admin**
+### **Admin**
 - Manage all the database(tables)
 
-**Students** - Lead & Member
+#### Function required for admin
+
+- Table editing in every table (update, insert, deletecd final_project)
+
+### **Students** - Lead & Member
 
 Lead
 - Create project
@@ -15,7 +19,7 @@ Member
 - Modify their project
 
 
-**Faculty** - Normal & Advisor
+### **Faculty** - Normal & Advisor
 
 Normal
 - See request to be advisor & response

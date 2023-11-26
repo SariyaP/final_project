@@ -54,8 +54,8 @@ def table_edit(table_name):
         print("1. Insert information", "2. Update information", "3. Delete information", "0. Exit", sep='\n')
         choice = input("Input your choice: ")
         if choice == "1":
+            print(f"Information format: {list(editing.table[1].keys())}")
             insert_information = list(input("Enter information: "))
-            # check if it's a list for insertion
             editing.insert(insert_information)
         elif choice == "2":
             key_value = input("What key do you want to edit: ")
@@ -102,6 +102,8 @@ def admin():
         elif choice == "0":
             break
 
+def student():
+    pass
 # make calls to the initializing and login functions defined above
 
 initializing()
@@ -112,7 +114,8 @@ val = login()
 if val[1] == 'admin':
     admin()
     # see and do admin related activities
-# elif val[1] = 'student':
+elif val[1] == 'student':
+    student()
     # see and do student related activities
 # elif val[1] = 'member':
     # see and do member related activities
