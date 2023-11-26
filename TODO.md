@@ -7,6 +7,16 @@
 
 ### **Students** - Lead & Member
 
+#### Function required for student
+- Create project
+- Find member
+- Send invite
+- Create group
+- Submit report
+- Request faculty
+- See invitation (Accept & Deny)
+- Modify project
+
 Lead
 - Create project
 - Find members & invite
@@ -20,6 +30,13 @@ Member
 
 
 ### **Faculty** - Normal & Advisor
+
+#### Function required for student
+- See request (Accept & Deny)
+- See project they advised
+- Evaluation
+- See report
+- Approve project
 
 Normal
 - See request to be advisor & response

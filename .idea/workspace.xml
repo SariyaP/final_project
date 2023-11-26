@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3fa43419-8c63-4e6d-b96b-5be8824f0d9e" name="Changes" comment="Add delete function and more admin role">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TODO.md" beforeDir="false" afterPath="$PROJECT_DIR$/TODO.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/project_manage.py" beforeDir="false" afterPath="$PROJECT_DIR$/project_manage.py" afterDir="false" />
-    </list>
+    <list default="true" id="3fa43419-8c63-4e6d-b96b-5be8824f0d9e" name="Changes" comment="Add delete function and more admin role" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
