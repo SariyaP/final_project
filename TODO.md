@@ -1,3 +1,4 @@
+# TODO
 ### **Admin**
 - Manage all the database(tables)
 
@@ -7,7 +8,7 @@
 
 ### **Students** - Lead & Member
 
-#### Function required for student
+#### Function required for Student
 - Create project
 - Find member
 - Send invite
@@ -31,7 +32,7 @@ Member
 
 ### **Faculty** - Normal & Advisor
 
-#### Function required for student
+#### Function required for Faculty
 - See request (Accept & Deny)
 - See project they advised
 - Evaluation
