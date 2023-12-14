@@ -2,6 +2,7 @@ import random
 
 import database
 import csv, os
+from datetime import datetime
 
 __location__ = os.path.realpath(
     os.path.join(os.getcwd(), os.path.dirname(__file__)))
@@ -106,14 +107,18 @@ def admin():
             break
 
 def find_member():
-    infos = input("Enter ID")
-    for i in my_db.search('login'):
-        if infos == i['ID']:
-            print(f"{i['Username']}")
-            if i['role'] == 'student':
-                invite_member(i['ID'])
-            elif i['role'] == 'faculty':
-                invite_advisor(i['ID'])
+    while True:
+        infos = input("Enter ID or type 0 to exit:")
+        if infos == 0:
+            break
+        else:
+            for i in my_db.search('login'):
+                if infos == i['ID']:
+                    print(f"{i['Username']}")
+                    if i['role'] == 'student':
+                        invite_member(i['ID'])
+                    elif i['role'] == 'faculty':
+                        invite_advisor(i['ID'])
 
 def invite_member(id):
     decision = str(input(f"Invite user {id} to be the member of your project? y/n"))
@@ -137,62 +142,76 @@ def create_project():
     project_name = str(input("What do you want to name this project? "))
     leader_id = val[0]
     my_db.search('project').table.insert([project_id,project_name,leader_id,'None','None','None','Editing'])
-
+    print('Project created!')
 
 def see_project():
-    print(f"Title: {my_db.search('project').filter(val[0])['Title']}")
-    print(f"ProjectID: {my_db.search('project').filter(val[0])['ProjectID']}")
-    new = str(input("Do you want to create new project? y/n"))
-    if new == 'y':
-        create_project()
-
+    while True:
+        print(f"Title: {my_db.search('project').filter(val[0])['Title']}")
+        print(f"ProjectID: {my_db.search('project').filter(val[0])['ProjectID']}")
+        new = str(input("Do you want to create new project? y/n"))
+        if new == 'y':
+            create_project()
+        else:
+            break
 
 def notification(id):
-    count = 0
-    project_info = my_db.search("project")
-    project_id = []
-    if my_db.search("login")['role'] == student:
-        for i in my_db.search('member'):
-            if i['to_be_member'] == id and i['Response'] == 'Pending':
-                count += 1
-                project_id.append(i['ProjectID'])
-                i.table.update('Response', 'Seen')
-        if count > 1:
-            print(f"You have {count} notifications!")
-        elif count == 1:
-            print(f"You have {count} notifications!")
-        elif count == 0:
-            print(f"You have no notification!")
-    else:
-        for i in my_db.search('advisor'):
-            if i['to_be_advisor'] == id and i['Response'] == 'Pending':
-                count += 1
-                i.table.update('Response', 'Seen')
-        if count > 1:
-            print(f"You have {count} notifications!")
-        elif count == 1:
-            print(f"You have {count} notifications!")
-        elif count == 0:
-            print(f"You have no notification!")
-    check = str(input("Do you want to check the notification? y/n"))
-    if check == 'y':
-        for i in project_info:
-            if project_id == i['ProjectID']:
-                print(f"Title: {i['Title']} Owner: {i['Lead']} \n"
-                      f"Member: {i['Member1']},{i['Member2']} \n"
-                      f"Advisor: {i['Advisor']} \n"
-                      f"Status: {i['Status']}")
-                decision = str(input("Accept invite? y/n"))
-                if decision == 'y':
-                    my_db.search("member").table.update('Response', 'Accepted')
-                    if my_db.search("project")['Member1'] == 'None':
-                        my_db.search("project").table.update('Member1', f'{id}')
+    while True:
+        count = 0
+        project_info = my_db.search("project")
+        project_id = []
+        if my_db.search("login")['role'] == 'student':
+            for i in my_db.search('member'):
+                if i['to_be_member'] == id and i['Response'] == 'Pending':
+                    count += 1
+                    project_id.append(i['ProjectID'])
+                    i.table.update('Response', 'Seen')
+            if count > 1:
+                print(f"You have {count} notifications!")
+            elif count == 1:
+                print(f"You have {count} notifications!")
+            elif count == 0:
+                print(f"You have no notification!")
+                break
+        else:
+            for i in my_db.search('advisor'):
+                if i['to_be_advisor'] == id and i['Response'] == 'Pending':
+                    count += 1
+                    i.table.update('Response', 'Seen')
+            if count > 1:
+                print(f"You have {count} notifications!")
+            elif count == 1:
+                print(f"You have {count} notifications!")
+            elif count == 0:
+                print(f"You have no notification!")
+                break
+
+        check = str(input("Do you want to check the notification? y/n"))
+        if check == 'y':
+            for i in project_info:
+                if project_id == i['ProjectID']:
+                    print(f"Title: {i['Title']} Owner: {i['Lead']} \n"
+                          f"Member: {i['Member1']},{i['Member2']} \n"
+                          f"Advisor: {i['Advisor']} \n"
+                          f"Status: {i['Status']}")
+                    decision = str(input("Accept invite? y/n"))
+                    if decision == 'y':
+                        my_db.search("member").table.update('Response', 'Accepted')
+                        if my_db.search("login")['role'] == 'student':
+                            if my_db.search("project")['Member1'] == 'None':
+                                my_db.search("project").table.update('Member1', f'{id}')
+                            else:
+                                my_db.search("project").table.update('Member2', f'{id}')
+                        else:
+                            my_db.search("project").table.update('Advisor', f'{id}')
                     else:
-                        my_db.search("project").table.update('Member2', f'{id}')
-                else:
-                    pass
-    else:
-        pass
+                        if my_db.search("login")['role'] == 'student':
+                            my_db.search("member").table.update('Response', 'Deny')
+                            my_db.search("member").table.update('Response_date', datetime.today().strftime('%Y-%m-%d'))
+                        else:
+                            my_db.search("advisor").table.update('Response', 'Deny')
+                            my_db.search("advisor").table.update('Response_date', datetime.today().strftime('%Y-%m-%d'))
+        else:
+            break
 
 
 def student(id):
