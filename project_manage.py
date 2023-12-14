@@ -136,13 +136,81 @@ def create_project():
     project_id = random.randint(10000,99999)
     project_name = str(input("What do you want to name this project? "))
     leader_id = val[0]
+    my_db.search('project').table.insert([project_id,project_name,leader_id,'None','None','None','Editing'])
+
 
 def see_project():
     print(f"Title: {my_db.search('project').filter(val[0])['Title']}")
     print(f"ProjectID: {my_db.search('project').filter(val[0])['ProjectID']}")
+    new = str(input("Do you want to create new project? y/n"))
+    if new == 'y':
+        create_project()
 
-def student():
-    pass
+
+def notification(id):
+    count = 0
+    project_info = my_db.search("project")
+    project_id = []
+    if my_db.search("login")['role'] == student:
+        for i in my_db.search('member'):
+            if i['to_be_member'] == id and i['Response'] == 'Pending':
+                count += 1
+                project_id.append(i['ProjectID'])
+                i.table.update('Response', 'Seen')
+        if count > 1:
+            print(f"You have {count} notifications!")
+        elif count == 1:
+            print(f"You have {count} notifications!")
+        elif count == 0:
+            print(f"You have no notification!")
+    else:
+        for i in my_db.search('advisor'):
+            if i['to_be_advisor'] == id and i['Response'] == 'Pending':
+                count += 1
+                i.table.update('Response', 'Seen')
+        if count > 1:
+            print(f"You have {count} notifications!")
+        elif count == 1:
+            print(f"You have {count} notifications!")
+        elif count == 0:
+            print(f"You have no notification!")
+    check = str(input("Do you want to check the notification? y/n"))
+    if check == 'y':
+        for i in project_info:
+            if project_id == i['ProjectID']:
+                print(f"Title: {i['Title']} Owner: {i['Lead']} \n"
+                      f"Member: {i['Member1']},{i['Member2']} \n"
+                      f"Advisor: {i['Advisor']} \n"
+                      f"Status: {i['Status']}")
+                decision = str(input("Accept invite? y/n"))
+                if decision == 'y':
+                    my_db.search("member").table.update('Response', 'Accepted')
+                    if my_db.search("project")['Member1'] == 'None':
+                        my_db.search("project").table.update('Member1', f'{id}')
+                    else:
+                        my_db.search("project").table.update('Member2', f'{id}')
+                else:
+                    pass
+    else:
+        pass
+
+
+def student(id):
+    while True:
+        info = my_db.search("login")
+        print(f"Hi, {info['username']}")
+        notification(id)
+        print(f"What do you want to do?"
+              f"1. See project",
+                "2. Invite member",
+                "0. Exit", sep='\n')
+        choices = input()
+        if choices == "1":
+            see_project()
+        elif choices == "2":
+            find_member()
+        elif choices == "0":
+            break
 # make calls to the initializing and login functions defined above
 
 initializing()
@@ -155,7 +223,7 @@ while True:
         admin()
     # see and do admin related activities
     elif val[1] == 'student':
-        student()
+        student(val[0])
     # see and do student related activities
     # elif val[1] = 'member':
         # see and do member related activities
