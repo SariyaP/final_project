@@ -1,3 +1,5 @@
+import random
+
 import database
 import csv, os
 
@@ -18,6 +20,7 @@ def initializing():
     my_db.insert(project)
     my_db.insert(advisor)
     my_db.insert(member)
+
 
 def login():
     login_info = my_db.search('login')
@@ -102,29 +105,66 @@ def admin():
         elif choice == "0":
             break
 
+def find_member():
+    infos = input("Enter ID")
+    for i in my_db.search('login'):
+        if infos == i['ID']:
+            print(f"{i['Username']}")
+            if i['role'] == 'student':
+                invite_member(i['ID'])
+            elif i['role'] == 'faculty':
+                invite_advisor(i['ID'])
+
+def invite_member(id):
+    decision = str(input(f"Invite user {id} to be the member of your project? y/n"))
+    if decision == 'y':
+        projectid = str(input("Enter your project ID: "))
+        new_member = my_db.search('member')
+        new_member.insert(projectid,id,'Pending', 'Not yet respond')
+    if decision == 'n':
+        pass
+
+def invite_advisor(id):
+    decision = str(input(f"Invite user {id} to be the advisor of your project? y/n"))
+    if decision == 'y':
+        projectid = str(input("Enter your project ID: "))
+        new_member = my_db.search('advisor')
+        new_member.insert(projectid, id, 'Pending', 'Not yet respond')
+    if decision == 'n':
+        pass
+def create_project():
+    project_id = random.randint(10000,99999)
+    project_name = str(input("What do you want to name this project? "))
+    leader_id = val[0]
+
+def see_project():
+    print(f"Title: {my_db.search('project').filter(val[0])['Title']}")
+    print(f"ProjectID: {my_db.search('project').filter(val[0])['ProjectID']}")
+
 def student():
     pass
 # make calls to the initializing and login functions defined above
 
 initializing()
-val = login()
+while True:
+    val = login()
 
 # based on the return value for login, activate the code that performs activities according to the role defined for that person_id
 
-if val[1] == 'admin':
-    admin()
+    if val[1] == 'admin':
+        admin()
     # see and do admin related activities
-elif val[1] == 'student':
-    student()
+    elif val[1] == 'student':
+        student()
     # see and do student related activities
-# elif val[1] = 'member':
-    # see and do member related activities
-# elif val[1] = 'lead':
-    # see and do lead related activities
-# elif val[1] = 'faculty':
-    # see and do faculty related activities
-# elif val[1] = 'advisor':
-    # see and do advisor related activities
+    # elif val[1] = 'member':
+        # see and do member related activities
+    # elif val[1] = 'lead':
+        # see and do lead related activities
+    # elif val[1] = 'faculty':
+        # see and do faculty related activities
+    # elif val[1] = 'advisor':
+        # see and do advisor related activities
 
 # once everyhthing is done, make a call to the exit function
-exit()
+    exit()

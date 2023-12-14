@@ -46,3 +46,6 @@ Normal
 Advisor
 - Accept & deny request to be advisor
 - Approve the project
+
+For Evaluation
+2-3 faculty which is not the advisor will be the grader 
