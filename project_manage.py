@@ -29,8 +29,8 @@ def login():
     password = str(input("Please input your password: "))
     for i in login_info.table:
         if i['username'] == username and i['password'] == password:
-            return [i['ID'], i['role']]
-        return None
+            return[i['ID'], i['role']]
+    print("Wrong username or password!")
 
 
 # here are things to do in this function:
@@ -109,7 +109,7 @@ def admin():
 def find_member():
     while True:
         infos = input("Enter ID or type 0 to exit:")
-        if infos == 0:
+        if infos == '0':
             break
         else:
             for i in my_db.search('login'):
@@ -145,10 +145,19 @@ def create_project():
     print('Project created!')
 
 def see_project():
+    user_project = []
+    num = 0
     while True:
-        print(f"Title: {my_db.search('project').filter(val[0])['Title']}")
-        print(f"ProjectID: {my_db.search('project').filter(val[0])['ProjectID']}")
-        new = str(input("Do you want to create new project? y/n"))
+        for i in my_db.search('project').table:
+            if i['Lead'] == val[0]:
+                num += 1
+                user_project.append(i)
+                print(f"{num}.")
+                print(f"Title: {i['Title']}")
+                print(f"ProjectID: {i['ProjectID']}")
+        # next or edit this one
+
+        new = str(input("Do you want to create new project? y/n \n"))
         if new == 'y':
             create_project()
         else:
@@ -157,14 +166,14 @@ def see_project():
 def notification(id):
     while True:
         count = 0
-        project_info = my_db.search("project")
+        project_info = my_db.search("project").table
         project_id = []
-        if my_db.search("login")['role'] == 'student':
-            for i in my_db.search('member'):
+        if val[1] == 'student':
+            for i in my_db.search('member').table:
                 if i['to_be_member'] == id and i['Response'] == 'Pending':
                     count += 1
                     project_id.append(i['ProjectID'])
-                    i.table.update('Response', 'Seen')
+                    # i.update('Response', 'Seen')
             if count > 1:
                 print(f"You have {count} notifications!")
             elif count == 1:
@@ -185,26 +194,29 @@ def notification(id):
                 print(f"You have no notification!")
                 break
 
-        check = str(input("Do you want to check the notification? y/n"))
+        check = str(input("Do you want to check the notification? y/n \n"))
         if check == 'y':
             for i in project_info:
-                if project_id == i['ProjectID']:
+                if i['ProjectID'] in project_id :
                     print(f"Title: {i['Title']} Owner: {i['Lead']} \n"
                           f"Member: {i['Member1']},{i['Member2']} \n"
                           f"Advisor: {i['Advisor']} \n"
                           f"Status: {i['Status']}")
-                    decision = str(input("Accept invite? y/n"))
+                    decision = str(input("Accept invite? y/n \n"))
                     if decision == 'y':
-                        my_db.search("member").table.update('Response', 'Accepted')
-                        if my_db.search("login")['role'] == 'student':
-                            if my_db.search("project")['Member1'] == 'None':
-                                my_db.search("project").table.update('Member1', f'{id}')
+                        # my_db.search("member").table.update('Response', 'Accepted')
+                        if val[1] == 'student':
+                            if my_db.search("project").table['Member1'] == 'None':
+                                print('yes')
+                                # my_db.search("project").table.update('Member1', f'{id}')
                             else:
-                                my_db.search("project").table.update('Member2', f'{id}')
+                                print('no')
+                                # my_db.search("project").table.update('Member2', f'{id}')
                         else:
-                            my_db.search("project").table.update('Advisor', f'{id}')
+                            print('yes')
+                            # my_db.search("project").table.update('Advisor', f'{id}')
                     else:
-                        if my_db.search("login")['role'] == 'student':
+                        if val[1] == 'student':
                             my_db.search("member").table.update('Response', 'Deny')
                             my_db.search("member").table.update('Response_date', datetime.today().strftime('%Y-%m-%d'))
                         else:
@@ -216,10 +228,11 @@ def notification(id):
 
 def student(id):
     while True:
-        info = my_db.search("login")
-        print(f"Hi, {info['username']}")
+        info = my_db.search("login").table
+        id_info = [i for i in info if id in i['ID']]
+        print(f"Hi, {id_info[0]['username']}")
         notification(id)
-        print(f"What do you want to do?"
+        print(f"What do you want to do?\n"
               f"1. See project",
                 "2. Invite member",
                 "0. Exit", sep='\n')
@@ -230,20 +243,14 @@ def student(id):
             find_member()
         elif choices == "0":
             break
-# make calls to the initializing and login functions defined above
 
 initializing()
-while True:
-    val = login()
+val = login()
 
-# based on the return value for login, activate the code that performs activities according to the role defined for that person_id
-
-    if val[1] == 'admin':
-        admin()
-    # see and do admin related activities
-    elif val[1] == 'student':
-        student(val[0])
-    # see and do student related activities
+if val[1] == 'admin':
+    admin()
+elif val[1] == 'student':
+    student(val[0])
     # elif val[1] = 'member':
         # see and do member related activities
     # elif val[1] = 'lead':
@@ -254,4 +261,4 @@ while True:
         # see and do advisor related activities
 
 # once everyhthing is done, make a call to the exit function
-    exit()
+exit()

@@ -67,8 +67,8 @@ class Table:
                     break
 
 
-    def update(self, key, value):
-        self.table[key] = value
+    def updates(self, key, value):
+        self.table.update({f"{key}": f"{value}"})
 
 # modify the code in the Table class so that it supports the insert operation where an entry can be added to a list of dictionary
 
