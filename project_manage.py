@@ -33,24 +33,10 @@ def login():
     print("Wrong username or password!")
 
 
-# here are things to do in this function:
-   # add code that performs a login task
-        # ask a user for a username and password
-        # returns [ID, role] if valid, otherwise returning None
-
-# define a function called exit
-
 def exit():
     database.write('member','Member_Pending', my_db)
     database.write('advisor', 'Advisor_Pending', my_db)
     database.write('project', 'Project_Table', my_db)
-
-# here are things to do in this function:
-   # write out all the tables that have been modified to the corresponding csv files
-   # By now, you know how to read in a csv file and transform it into a list of dictionaries. For this project, you also need to know how to do the reverse, i.e.,
-   # writing out to a csv file given a list of dictionaries. See the link below for a tutorial on how to do this:
-   
-   # https://www.pythonforbeginners.com/basics/list-of-dictionaries-to-csv-in-python
 
 
 def table_edit(table_name):
@@ -108,6 +94,7 @@ def admin():
         elif choice == "0":
             break
 
+
 def find_member():
     while True:
         infos = input("Enter ID or type 0 to exit:")
@@ -122,6 +109,7 @@ def find_member():
                     elif i['role'] == 'faculty':
                         invite_advisor(i['ID'])
 
+
 def invite_member(id):
     decision = str(input(f"Invite user {id} to be the member of your project? y/n"))
     if decision == 'y':
@@ -131,6 +119,7 @@ def invite_member(id):
     if decision == 'n':
         pass
 
+
 def invite_advisor(id):
     decision = str(input(f"Invite user {id} to be the advisor of your project? y/n"))
     if decision == 'y':
@@ -139,12 +128,15 @@ def invite_advisor(id):
         new_member.insert(projectid, id, 'Pending', 'Not yet respond')
     if decision == 'n':
         pass
+
+
 def create_project():
     project_id = random.randint(10000,99999)
     project_name = str(input("What do you want to name this project? "))
     leader_id = val[0]
     my_db.search('project').insert({project_id,project_name,leader_id,'None','None','None','Created','Empty'})
     print('Project created!')
+
 
 def edit_project():
     while True:
@@ -210,9 +202,6 @@ def edit_project():
                 break
 
 
-
-
-
 def see_project():
     while True:
         user_project = []
@@ -234,6 +223,7 @@ def see_project():
             create_project()
         else:
             break
+
 
 def notification(id):
     while True:
@@ -355,14 +345,8 @@ if val[1] == 'admin':
     admin()
 elif val[1] == 'student':
     student(val[0])
-    # elif val[1] = 'member':
-        # see and do member related activities
-    # elif val[1] = 'lead':
-        # see and do lead related activities
     # elif val[1] = 'faculty':
         # see and do faculty related activities
-    # elif val[1] = 'advisor':
-        # see and do advisor related activities
 
 # once everyhthing is done, make a call to the exit function
 exit()

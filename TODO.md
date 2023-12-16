@@ -1,26 +1,12 @@
 # TODO
 ### **Admin**
-- Manage all the database(tables)
-
-#### Function required for admin
-
-- Table editing in every table (update, insert, deletecd final_project)
+- Manage all the database(update, insert, deleted final_project)
 
 ### **Students** - Lead & Member
-
-#### Function required for Student
-- Create project
-- Find member
-- Send invite
-- Create group
-- Submit report
-- Request faculty
-- See invitation (Accept & Deny)
-- Modify project
-
 Lead
 - Create project
 - Find members & invite
+- Edit project (remove member, faculty, adding information, submit)
 - Add member & create group
 - Submit report
 - Request faculty to be advisor
@@ -29,16 +15,7 @@ Member
 - Accept & Deny invitation
 - Modify their project
 
-
 ### **Faculty** - Normal & Advisor
-
-#### Function required for Faculty
-- See request (Accept & Deny)
-- See project they advised
-- Evaluation
-- See report
-- Approve project
-
 Normal
 - See request to be advisor & response
 - See project details
@@ -48,5 +25,5 @@ Advisor
 - Accept & deny request to be advisor
 - Approve the project
 
-For Evaluation
-2-3 faculty which is not the advisor will be the grader 
+### For Evaluation
+2-3 faculty which is not the advisor will be the grader
