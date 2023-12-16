@@ -141,8 +141,75 @@ def create_project():
     project_id = random.randint(10000,99999)
     project_name = str(input("What do you want to name this project? "))
     leader_id = val[0]
-    my_db.search('project').table.insert([project_id,project_name,leader_id,'None','None','None','Editing'])
+    my_db.search('project').insert({project_id,project_name,leader_id,'None','None','None','Created','Empty'})
     print('Project created!')
+
+def edit_project():
+    while True:
+        editing = input("Enter your project name you want to edit: ")
+        choice = input("What do you want to edit?\n"
+                       "1. Insert information\n"
+                       "2. Member\n"
+                       "3. Advisor\n"
+                       "4. Submit\n"
+                       "0. Exit\n")
+        if choice == '1':
+            project = my_db.search('project').filter(lambda x: x['Title'] == editing)
+            print(project.table)
+            if project.table[0]['Status'] == 'Submitted':
+                print("This project is already submitted.")
+                unsub = input("Do you want to unsubmit the project? y/n \n")
+                if unsub == 'y':
+                    project.update_table('Status', 'Editing')
+                else:
+                    break
+            else:
+                if project.table[0]['Information'] == 'Empty':
+                    new_information = input("Write your project information\n")
+                    project.update_table('Information', new_information)
+                else:
+                    new_information = input("Write your project information")
+                    old_informtaion = project['Information']
+                    project.update_table('Information', old_informtaion+' '+new_information)
+        elif choice == '2':
+            project = my_db.search('project').filter(lambda x: x['ProjectID'] == editing)
+            if project.table[0]['Lead'] != val[0]:
+                print("You don't have permission!")
+                break
+            else:
+                while True:
+                    member = input("Enter ID of the user you want to remove from the project")
+                    if member not in project[0]:
+                        print('There is no matching ID!')
+                        break
+                    else:
+                        if project.table[0]['Member1'] == member:
+                            project.update_table('Member1', 'None')
+                        else:
+                            project.update_table('Member2', 'None')
+        elif choice == '3':
+            project = my_db.search('project').filter(lambda x: x['ProjectID'] == editing)
+            if project.table[0]['Lead'] != val[0]:
+                print("You don't have permission!")
+                break
+            else:
+                advisor = input("Are you sure you want to remove advisor? y/n \n")
+                if advisor == 'y':
+                    print('Advisor removed')
+                    project.update_table('Advisor', 'None')
+                else:
+                    break
+        elif choice == '4':
+            project = my_db.search('project').filter(lambda x: x['ProjectID'] == editing)
+            sure = input("Submit your project? y/n \n")
+            if sure == 'y':
+                project.update_table('Status', 'Submitted')
+            else:
+                break
+
+
+
+
 
 def see_project():
     user_project = []
@@ -155,13 +222,17 @@ def see_project():
                 print(f"{num}.")
                 print(f"Title: {i['Title']}")
                 print(f"ProjectID: {i['ProjectID']}")
-        # next or edit this one
-
-        new = str(input("Do you want to create new project? y/n \n"))
-        if new == 'y':
-            create_project()
-        else:
-            break
+                choice = input("What do you want to do with your project? \n"
+                               "1. Edit\n"
+                               "2. Create new project\n"
+                               "0. Exit\n")
+                if choice == '1':
+                    edit_project()
+                elif choice == '2':
+                    create_project()
+                    break
+                else:
+                    break
 
 def notification(id):
     while True:
@@ -173,7 +244,11 @@ def notification(id):
                 if i['to_be_member'] == id and i['Response'] == 'Pending':
                     count += 1
                     project_id.append(i['ProjectID'])
-                    # i.update('Response', 'Seen')
+                    # update_project = my_db.search('project').filter(lambda x:x['Member1'] == id or x['Member2'] == id)
+                    # print(update_project.table)
+                    # for d in update_project.table:
+                    #     d.update((k, "Seen") for k,v in d.items() if v == 'Pending')
+                    # print(update_project.table)
             if count > 1:
                 print(f"You have {count} notifications!")
             elif count == 1:
@@ -182,10 +257,9 @@ def notification(id):
                 print(f"You have no notification!")
                 break
         else:
-            for i in my_db.search('advisor'):
+            for i in my_db.search('advisor').table:
                 if i['to_be_advisor'] == id and i['Response'] == 'Pending':
                     count += 1
-                    i.table.update('Response', 'Seen')
             if count > 1:
                 print(f"You have {count} notifications!")
             elif count == 1:
@@ -204,24 +278,52 @@ def notification(id):
                           f"Status: {i['Status']}")
                     decision = str(input("Accept invite? y/n \n"))
                     if decision == 'y':
-                        # my_db.search("member").table.update('Response', 'Accepted')
+                        change = my_db.search('member').filter(lambda x:x['ProjectID'] == i['ProjectID'])
+                        change.update_table('Response', 'Accepted')
                         if val[1] == 'student':
-                            if my_db.search("project").table['Member1'] == 'None':
-                                print('yes')
-                                # my_db.search("project").table.update('Member1', f'{id}')
+                            print(f"You can now view {i['ProjectID']} as member")
+                            if my_db.search("project").table[0]['Member1'] == 'None':
+                                my_db.search("project").filter(lambda x:x['ProjectID'] == i['ProjectID']).update_table('Member1', f'{id}')
+                                my_db.search('member').filter(lambda x:x['ProjectID'] == i['ProjectID'] and x['to_be_member'] == val[0]).update_table('Response', 'Accepted')
+                                my_db.search('member').filter(
+                                    lambda x: x['ProjectID'] == i['ProjectID'] and x['to_be_member'] == val[
+                                        0]).update_table('Response_date', datetime.today().strftime('%Y-%m-%d'))
+
+
                             else:
-                                print('no')
-                                # my_db.search("project").table.update('Member2', f'{id}')
+                                my_db.search("project").filter(lambda x:x['ProjectID'] == i['ProjectID']).update_table('Member2', f'{id}')
+                                my_db.search('member').filter(
+                                    lambda x: x['ProjectID'] == i['ProjectID'] and x['to_be_member'] == val[
+                                        0]).update_table('Response', 'Accepted')
+                                my_db.search('member').filter(
+                                    lambda x: x['ProjectID'] == i['ProjectID'] and x['to_be_member'] == val[
+                                        0]).update_table('Response_date', datetime.today().strftime('%Y-%m-%d'))
                         else:
-                            print('yes')
-                            # my_db.search("project").table.update('Advisor', f'{id}')
+                            print(f"You can now view {i['ProjectID']} as advisor")
+                            my_db.search("project").filter(lambda x:x['ProjectID'] == i['ProjectID']).update_table('Advisor', f'{id}')
+                            my_db.search('member').filter(
+                                lambda x: x['ProjectID'] == i['ProjectID'] and x['to_be_advisor'] == val[
+                                    0]).update_table('Response', 'Accepted')
+                            my_db.search('member').filter(
+                                lambda x: x['ProjectID'] == i['ProjectID'] and x['to_be_advisor'] == val[
+                                    0]).update_table('Response_date', datetime.today().strftime('%Y-%m-%d'))
+
                     else:
                         if val[1] == 'student':
-                            my_db.search("member").table.update('Response', 'Deny')
-                            my_db.search("member").table.update('Response_date', datetime.today().strftime('%Y-%m-%d'))
+                            my_db.search('member').filter(
+                                lambda x: x['ProjectID'] == i['ProjectID'] and x['to_be_member'] == val[
+                                    0]).update_table('Response', 'Denied')
+                            my_db.search('member').filter(
+                                lambda x: x['ProjectID'] == i['ProjectID'] and x['to_be_member'] == val[
+                                    0]).update_table('Response_date', datetime.today().strftime('%Y-%m-%d'))
+
                         else:
-                            my_db.search("advisor").table.update('Response', 'Deny')
-                            my_db.search("advisor").table.update('Response_date', datetime.today().strftime('%Y-%m-%d'))
+                            my_db.search('advisor').filter(
+                                lambda x: x['ProjectID'] == i['ProjectID'] and x['to_be_advisor'] == val[
+                                    0]).update_table('Response', 'Denied')
+                            my_db.search('advisor').filter(
+                                lambda x: x['ProjectID'] == i['ProjectID'] and x['to_be_advisor'] == val[
+                                    0]).update_table('Response_date', datetime.today().strftime('%Y-%m-%d'))
         else:
             break
 

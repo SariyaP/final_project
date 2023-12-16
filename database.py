@@ -13,6 +13,16 @@ def open_csv(name, file):
             name.append(dict(r))
     return name
 
+def write(name, file):
+    my_file = open(f'{file}.csv', 'w')
+    writer = csv.writer(my_file)
+    writer.writerow(['Name', 'Roll', 'Language'])
+    table = name.search(f'{name}')
+    for dictionary in table:
+        writer.writerow(dictionary.values())
+    my_file.close()
+
+
 # add in code for a Database class
 class DB:
     def __init__(self):
@@ -67,8 +77,8 @@ class Table:
                     break
 
 
-    def updates(self, key, value):
-        self.table.update({f"{key}": f"{value}"})
+    def update_table(self, key, value):
+        self.table[0].update({f"{key}": f"{value}"})
 
 # modify the code in the Table class so that it supports the insert operation where an entry can be added to a list of dictionary
 
