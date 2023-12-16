@@ -13,14 +13,14 @@ def open_csv(name, file):
             name.append(dict(r))
     return name
 
-def write(name, file):
-    my_file = open(f'{file}.csv', 'w')
-    writer = csv.writer(my_file)
-    writer.writerow(['Name', 'Roll', 'Language'])
-    table = name.search(f'{name}')
-    for dictionary in table:
-        writer.writerow(dictionary.values())
-    my_file.close()
+def write(name, file, my_db):
+    table = my_db.search(name.split('.')[0])
+    if table.table.__len__() > 0:
+        with open(os.path.join(__location__, f'{file}.csv'), 'w', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=table.table[0].keys())
+            writer.writeheader()
+            for row in table.table:
+                writer.writerow(row)
 
 
 # add in code for a Database class
