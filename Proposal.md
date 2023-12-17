@@ -25,6 +25,10 @@ Therefore, In this code we will base the code for each role.
 - They can see all the project which they chose to advised.
 - Evaluation can be given to each project and approval will be done after.
 
+### Evaluation process
+- The project advisor will be telling other faculty to grade the project.
+- 2 faculties will grade the given project and send the score.
+- The score will be graded and the project can not be edited anymore.
 # Purpose & Conveniences
 
-This project is being created for a better management of projects for each users. Which can be used widely if there is a further development. The program can be apllied in every project managing which will be more convenience.
+This project is being created for a better management of projects for each user. Which can be used widely if there is a further development. The program can be apllied in every project managing which will be more convenience.

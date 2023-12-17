@@ -20,6 +20,7 @@ Normal
 - See request to be advisor & response
 - See project details
 - Evaluation
+- Grade the project
   
 Advisor
 - Accept & deny request to be advisor

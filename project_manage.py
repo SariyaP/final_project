@@ -145,71 +145,76 @@ def create_project():
 
 def edit_project():
     while True:
-        editing = input("Enter your project name you want to edit: ")
+        editing = input("Enter your project name you want to edit(or 0 to exit): ")
         if editing == '0':
             break
-        elif editing not in my_db.search('project').table:
-            print('There is no project!')
-        choice = input("What do you want to edit?\n"
-                       "1. Insert information\n"
-                       "2. Member\n"
-                       "3. Advisor\n"
-                       "4. Submit\n"
-                       "0. Exit\n")
-        if choice == '1':
-            project = my_db.search('project').filter(lambda x: x['Title'] == editing)
-            if project.table[0]['Status'] == 'Submitted':
-                print("This project is already submitted.")
-                unsub = input("Do you want to unsubmit the project? y/n \n")
-                if unsub == 'y':
-                    project.update_table('Status', 'Editing')
-                else:
-                    break
-            else:
-                if project.table[0]['Information'] == 'Empty':
-                    new_information = input("Write your project information\n")
-                    project.update_table('Information', new_information)
-                    my_db.search('project').filter(lambda x: x['Title'] == editing).update_table('Status', 'Editing')
-                else:
-                    new_information = input("Write your project information")
-                    old_informtaion = project['Information']
-                    project.update_table('Information', old_informtaion+' '+new_information)
-        elif choice == '2':
-            project = my_db.search('project').filter(lambda x: x['Title'] == editing)
-            if project.table[0]['Lead'] != val[0]:
-                print("You don't have permission!")
-                break
-            else:
-                while True:
-                    member = input("Enter ID of the user you want to remove from the project")
-                    if member not in project[0]:
-                        print('There is no matching ID!')
-                        break
-                    else:
-                        if project.table[0]['Member1'] == member:
-                            project.update_table('Member1', 'None')
+        if len(my_db.search('project').filter(lambda x:x['Title'] == editing)) > 0:
+            if editing not in my_db.search('project').table:
+                print('There is no project!')
+            choice = input("What do you want to edit?\n"
+                           "1. Insert information\n"
+                           "2. Member\n"
+                           "3. Advisor\n"
+                           "4. Submit\n"
+                           "0. Exit\n")
+            if choice == '1':
+                project = my_db.search('project').filter(lambda x: x['Title'] == editing)
+                if project.table[0]['Status'] != 'Graded':
+                    if project.table[0]['Status'] == 'Submitted':
+                        print("This project is already submitted.")
+                        unsub = input("Do you want to unsubmit the project? y/n \n")
+                        if unsub == 'y':
+                            project.update_table('Status', 'Editing')
                         else:
-                            project.update_table('Member2', 'None')
-        elif choice == '3':
-            project = my_db.search('project').filter(lambda x: x['Title'] == editing)
-            if project.table[0]['Lead'] != val[0]:
-                print("You don't have permission!")
-                break
-            else:
-                advisor = input("Are you sure you want to remove advisor? y/n \n")
-                if advisor == 'y':
-                    print('Advisor removed')
-                    project.update_table('Advisor', 'None')
+                            break
+                    else:
+                        if project.table[0]['Information'] == 'Empty':
+                            new_information = input("Write your project information\n")
+                            project.update_table('Information', new_information)
+                            my_db.search('project').filter(lambda x: x['Title'] == editing).update_table('Status', 'Editing')
+                        else:
+                            new_information = input("Write your project information")
+                            old_informtaion = project['Information']
+                            project.update_table('Information', old_informtaion+' '+new_information)
+                else:
+                    print('This project is already graded!')
+            elif choice == '2':
+                project = my_db.search('project').filter(lambda x: x['Title'] == editing)
+                if project.table[0]['Lead'] != val[0]:
+                    print("You don't have permission!")
+                    break
+                else:
+                    while True:
+                        member = input("Enter ID of the user you want to remove from the project")
+                        if member not in project[0]:
+                            print('There is no matching ID!')
+                            break
+                        else:
+                            if project.table[0]['Member1'] == member:
+                                project.update_table('Member1', 'None')
+                            else:
+                                project.update_table('Member2', 'None')
+            elif choice == '3':
+                project = my_db.search('project').filter(lambda x: x['Title'] == editing)
+                if project.table[0]['Lead'] != val[0]:
+                    print("You don't have permission!")
+                    break
+                else:
+                    advisor = input("Are you sure you want to remove advisor? y/n \n")
+                    if advisor == 'y':
+                        print('Advisor removed')
+                        project.update_table('Advisor', 'None')
+                    else:
+                        break
+            elif choice == '4':
+                project = my_db.search('project').filter(lambda x: x['Title'] == editing)
+                sure = input("Submit your project? y/n \n")
+                if sure == 'y':
+                    project.update_table('Status', 'Submitted')
                 else:
                     break
-        elif choice == '4':
-            project = my_db.search('project').filter(lambda x: x['Title'] == editing)
-            sure = input("Submit your project? y/n \n")
-            if sure == 'y':
-                project.update_table('Status', 'Submitted')
-            else:
-                break
-
+        else:
+            print("There is no project with the same title!")
 
 def delete_project():
     deletepro = input("Enter your project title to delete: ")
