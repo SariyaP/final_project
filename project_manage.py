@@ -11,6 +11,8 @@ my_db = database.DB()
 
 
 def initializing():
+    """This function is being uses to open all the csv file and insert it to the database
+    which we will be uses to call in many others function"""
     person_table = database.Table('person', database.open_csv("person", 'persons'))
     info_table = database.Table('login', database.open_csv("info", 'login'))
     advisor = database.Table('advisor', database.open_csv('advisor', 'Advisor_Pending'))
@@ -26,6 +28,8 @@ def initializing():
 
 
 def login():
+    """This function is being uses to login by calling the information from the database
+    we enter the username and then password. it will return set value of ID and role"""
     while True:
         login_info = my_db.search('login')
         print("Enter your username and password")
@@ -38,6 +42,8 @@ def login():
 
 
 def exit():
+    """This function will be call only when the user exit the program
+    It will rewrite all hte change from database into the csv file according to names"""
     database.write('member', 'Member_Pending', my_db)
     database.write('advisor', 'Advisor_Pending', my_db)
     database.write('project', 'Project_Table', my_db)
@@ -45,6 +51,8 @@ def exit():
 
 
 def table_edit(table_name):
+    """Editing table from table name you can select insert information,
+    delete information or update an existing information"""
     while True:
         editing = my_db.search(table_name)
         print("What do you want to do with it?")
@@ -66,6 +74,8 @@ def table_edit(table_name):
 
 
 def table_access():
+    """Access to each table from the input name. There are login info, user info,
+    project info, advisor pending, member pending"""
     while True:
         print("Which table do you want to access?")
         print("1. Login info",
@@ -90,6 +100,8 @@ def table_access():
 
 
 def admin():
+    """This can only be access by admin they can choose to edit table or else they will exit the program and
+    need to logins as other role"""
     while True:
         print("Welcome admin")
         print("1. Manage the table", "0. Exit", sep='\n')
@@ -101,6 +113,8 @@ def admin():
 
 
 def find_member():
+    """This function will be uses by both faculty and student
+    It was written to separate the role and prevent from most of the possible error"""
     while True:
         infos = input("Enter ID or type 0 to exit:")
         if infos == '0':
@@ -116,6 +130,7 @@ def find_member():
 
 
 def invite_member(id):
+    """This function is being uses to invite student to be member of the project"""
     decision = str(input(f"Invite user {id} to be the member of your project? y/n"))
     if decision == 'y':
         projectid = str(input("Enter your project ID: "))
@@ -125,6 +140,7 @@ def invite_member(id):
 
 
 def invite_advisor(id):
+    """This function is being uses to invite faculty to be an advisor of the project"""
     decision = str(input(f"Invite user {id} to be the advisor of your project? y/n"))
     if decision == 'y':
         projectid = str(input("Enter your project ID: "))
@@ -134,6 +150,7 @@ def invite_advisor(id):
 
 
 def create_project():
+    """This function will create new project into project file and ID will be random number in 5 digits"""
     project_id = random.randint(10000, 99999)
     project_name = str(input("What do you want to name this project? "))
     leader_id = val[0]
@@ -144,6 +161,10 @@ def create_project():
 
 
 def edit_project():
+    """This function will be uses to edit the project information containing:
+    member information, advisor information, insert information, submit the project
+    user can choose what they want to do with their project but if there is no project you will need to go back and
+    create project first then you'll see the edit function"""
     while True:
         editing = input("Enter your project name you want to edit(or 0 to exit): ")
         if editing == '0':
@@ -217,12 +238,14 @@ def edit_project():
             print("There is no project with the same title!")
 
 def delete_project():
+    """Delete the existing project by title"""
     deletepro = input("Enter your project title to delete: ")
     for i in my_db.search('project').filter(lambda x: x['Title'] == deletepro):
         my_db.search('project').table.delete(i['ProjectID'])
 
 
 def see_project():
+    """See the project information if you are a students"""
     while True:
         user_project = []
         num = 0
@@ -252,6 +275,8 @@ def see_project():
 
 
 def notification(id):
+    """Ping all the notification whether you are a student or faculty it will count and ask
+    if you want to view all the notifications"""
     while True:
         count = 0
         project_info = my_db.search("project").table
@@ -355,6 +380,7 @@ def notification(id):
 
 
 def evaluation():
+    """The function will create a grading for other faculty to grade the project they advised"""
     advised = sub_project()
     while True:
         evaluate = input('Enter project ID to evaluate(or 0 to exit):')
@@ -371,6 +397,8 @@ def evaluation():
             print('There is no such project')
 
 def grade():
+    """Faculty who is not an advisor of the selected project can grade the project
+    The score will be evaluated by average score"""
     if len(my_db.search('grade').table) > 0:
         for i in my_db.search('grade').table:
             if val[0] in i['Grade1']:
@@ -398,6 +426,7 @@ def grade():
 
 
 def sub_project():
+    """View all the submitted project which you are an advisor to"""
     submitted = my_db.search('project').filter(lambda x: x['Status'] == 'Submitted' and x['Advisor'] == val[0])
     if len(submitted) > 0:
         submitted_id = []
@@ -414,6 +443,7 @@ def sub_project():
 
 
 def student():
+    """The student function will be called if you logins as a student"""
     while True:
         info = my_db.search("login").table
         id_info = [i for i in info if val[0] in i['ID']]
@@ -435,6 +465,7 @@ def student():
 
 
 def faculty():
+    """The student function will be called if you logins as a faculty"""
     while True:
         info = my_db.search("login").table
         id_info = [i for i in info if val[0] in i['ID']]
@@ -478,5 +509,4 @@ while True:
     elif val[1] == 'faculty':
         faculty()
         exit()
-
-
+        
