@@ -1,7 +1,7 @@
 import random
 
 import database
-import csv, os
+import os
 from datetime import datetime
 
 __location__ = os.path.realpath(
@@ -16,27 +16,31 @@ def initializing():
     advisor = database.Table('advisor', database.open_csv('advisor', 'Advisor_Pending'))
     member = database.Table('member', database.open_csv('member', 'Member_Pending'))
     project = database.Table('project', database.open_csv('project', 'Project_Table'))
+    grade = database.Table('grade', database.open_csv('grade', 'Grading'))
     my_db.insert(person_table)
     my_db.insert(info_table)
     my_db.insert(project)
     my_db.insert(advisor)
     my_db.insert(member)
+    my_db.insert(grade)
 
 
 def login():
-    login_info = my_db.search('login')
-    username = str(input("Please input your username: "))
-    password = str(input("Please input your password: "))
-    for i in login_info.table:
-        if i['username'] == username and i['password'] == password:
-            return[i['ID'], i['role']]
-    print("Wrong username or password!")
-
+    while True:
+        login_info = my_db.search('login')
+        print("Enter your username and password")
+        username = str(input("Please input your username: "))
+        password = str(input("Please input your password: "))
+        for i in login_info.table:
+            if i['username'] == username and i['password'] == password:
+                return[i['ID'], i['role']]
+        print("Wrong username or password!")
 
 def exit():
     database.write('member','Member_Pending', my_db)
     database.write('advisor', 'Advisor_Pending', my_db)
     database.write('project', 'Project_Table', my_db)
+    database.write('grade', 'Grading', my_db)
 
 
 def table_edit(table_name):
@@ -101,7 +105,7 @@ def find_member():
         if infos == '0':
             break
         else:
-            for i in my_db.search('login'):
+            for i in my_db.search('login').table:
                 if infos == i['ID']:
                     print(f"{i['Username']}")
                     if i['role'] == 'student':
@@ -114,8 +118,7 @@ def invite_member(id):
     decision = str(input(f"Invite user {id} to be the member of your project? y/n"))
     if decision == 'y':
         projectid = str(input("Enter your project ID: "))
-        new_member = my_db.search('member')
-        new_member.insert(projectid,id,'Pending', 'Not yet respond')
+        my_db.search('member').insert(projectid,id,'Pending', 'None')
     if decision == 'n':
         pass
 
@@ -124,8 +127,7 @@ def invite_advisor(id):
     decision = str(input(f"Invite user {id} to be the advisor of your project? y/n"))
     if decision == 'y':
         projectid = str(input("Enter your project ID: "))
-        new_member = my_db.search('advisor')
-        new_member.insert(projectid, id, 'Pending', 'Not yet respond')
+        my_db.search('advisor').insert(projectid, id, 'Pending', 'None')
     if decision == 'n':
         pass
 
@@ -134,13 +136,17 @@ def create_project():
     project_id = random.randint(10000,99999)
     project_name = str(input("What do you want to name this project? "))
     leader_id = val[0]
-    my_db.search('project').insert({project_id,project_name,leader_id,'None','None','None','Created','Empty'})
+    my_db.search('project').insert({"ProjectID":project_id,'Title':project_name,'Lead':leader_id,'Member1':'None','Member2':'None','Advisor':'None','Status':'Created','Information':'Empty'})
     print('Project created!')
 
 
 def edit_project():
     while True:
         editing = input("Enter your project name you want to edit: ")
+        if editing == '0':
+            break
+        elif editing not in my_db.search('project').table:
+            print('There is no project!')
         choice = input("What do you want to edit?\n"
                        "1. Insert information\n"
                        "2. Member\n"
@@ -149,7 +155,6 @@ def edit_project():
                        "0. Exit\n")
         if choice == '1':
             project = my_db.search('project').filter(lambda x: x['Title'] == editing)
-            print(project.table)
             if project.table[0]['Status'] == 'Submitted':
                 print("This project is already submitted.")
                 unsub = input("Do you want to unsubmit the project? y/n \n")
@@ -161,12 +166,13 @@ def edit_project():
                 if project.table[0]['Information'] == 'Empty':
                     new_information = input("Write your project information\n")
                     project.update_table('Information', new_information)
+                    my_db.search('project').filter(lambda x: x['Title'] == editing).update_table('Status', 'Editing')
                 else:
                     new_information = input("Write your project information")
                     old_informtaion = project['Information']
                     project.update_table('Information', old_informtaion+' '+new_information)
         elif choice == '2':
-            project = my_db.search('project').filter(lambda x: x['ProjectID'] == editing)
+            project = my_db.search('project').filter(lambda x: x['Title'] == editing)
             if project.table[0]['Lead'] != val[0]:
                 print("You don't have permission!")
                 break
@@ -182,7 +188,7 @@ def edit_project():
                         else:
                             project.update_table('Member2', 'None')
         elif choice == '3':
-            project = my_db.search('project').filter(lambda x: x['ProjectID'] == editing)
+            project = my_db.search('project').filter(lambda x: x['Title'] == editing)
             if project.table[0]['Lead'] != val[0]:
                 print("You don't have permission!")
                 break
@@ -194,13 +200,17 @@ def edit_project():
                 else:
                     break
         elif choice == '4':
-            project = my_db.search('project').filter(lambda x: x['ProjectID'] == editing)
+            project = my_db.search('project').filter(lambda x: x['Title'] == editing)
             sure = input("Submit your project? y/n \n")
             if sure == 'y':
                 project.update_table('Status', 'Submitted')
             else:
                 break
 
+def delete_project():
+    deletepro = input("Enter your project title to delete: ")
+    for i in my_db.search('project').filter(lambda x:x['Title'] == deletepro):
+        my_db.search('project').table.delete(i['ProjectID'])
 
 def see_project():
     while True:
@@ -213,16 +223,22 @@ def see_project():
                 print(f"{num}.")
                 print(f"Title: {i['Title']}")
                 print(f"ProjectID: {i['ProjectID']}")
-        choice = input("What do you want to do with your project? \n"
-                       "1. Edit\n"
-                       "2. Create new project\n"
-                       "0. Exit\n")
-        if choice == '1':
-            edit_project()
-        elif choice == '2':
-            create_project()
-        else:
-            break
+        break
+    if val[1] == 'student':
+        while True:
+            choice = input("What do you want to do with your project? \n"
+                           "1. Edit\n"
+                           "2. Create new project\n"
+                           "3. Delete project\n"
+                           "0. Exit\n")
+            if choice == '1':
+                edit_project()
+            elif choice == '2':
+                create_project()
+            elif choice == '3':
+                delete_project()
+            else:
+                break
 
 
 def notification(id):
@@ -246,6 +262,7 @@ def notification(id):
             for i in my_db.search('advisor').table:
                 if i['to_be_advisor'] == id and i['Response'] == 'Pending':
                     count += 1
+                    project_id.append(i['ProjectID'])
             if count > 1:
                 print(f"You have {count} notifications!")
             elif count == 1:
@@ -319,13 +336,68 @@ def notification(id):
         else:
             break
 
+def evaluation():
+    advised = sub_project()
+    while True:
+        evaluate = input('Enter project ID to evaluate(or 0 to exit):')
+        if evaluate in advised:
+            grader1 = input('Enter ID of other faculty:')
+            grader2 = input("Enter ID of other faculty:")
+            my_db.search('grade').insert({
+                'ProjectID':evaluate,'Grader1':grader1,"Grader2":grader2,"Grade1":'None','Grade2':"None",'Final_grade':'None'})
+            my_db.search('project').filter(lambda x:x['ProjectID'] == [evaluate]).update('Status','Grading')
+        if evaluate == '0':
+            break
+        else:
+            print('There is no such project')
 
-def student(id):
+def grade():
+    if len(my_db.search('grade').table)>0:
+        for i in my_db.search('grade').table:
+            if val[0] in i['Grade1']:
+                projectid = i['ProjectID']
+                graded = my_db.search('project').filter(lambda x: x['ProjectID'] == projectid)
+                print(f"Title: {graded['title']}\n"
+                      f"Information: {graded['Information']}")
+                grade_ = input("What will you rate this project?")
+                my_db.search('grade').filter(lambda x:x['ProjectID']==projectid).update_table('Grade1',grade_)
+                print('Thank you for rating!')
+            if val[0] in i['Grade2']:
+                projectid = i['ProjectID']
+                graded = my_db.search('project').filter(lambda x: x['ProjectID'] == projectid)
+                print(f"Title: {graded['title']}\n"
+                      f"Information: {graded['Information']}")
+                grade_ = input("What will you rate this project?")
+                my_db.search('grade').filter(lambda x: x['ProjectID'] == projectid).update_table('Grade2', grade_)
+                my_db.search('grade').filter(
+                    lambda x: x['ProjectID'] == projectid).update_table('Final_grade', f""
+                    f"{int(grade_)+int(my_db.search('grade').filter(lambda x: x['ProjectID'] == projectid)['Grade1'])/2:.2f}")
+                my_db.search('project').filter(lambda x:x['ProjectID']==projectid).update_table('Status', 'Graded')
+                print('Thank you for rating!')
+    else:
+        print("There is nothing to grade")
+
+def sub_project():
+    submitted = my_db.search('project').filter(lambda x: x['Status'] == 'Submitted' and x['Advisor'] == val[0])
+    if len(submitted) > 0:
+        submitted_id = []
+        for i in submitted.table:
+            print(f"Title: {i['Title']} Owner: {i['Lead']} \n"
+                  f"Member: {i['Member1']},{i['Member2']} \n"
+                  f"Advisor: {i['Advisor']} \n"
+                  f"Status: {i['Status']}\n"
+                  f"Information: {i['information']}")
+            submitted_id.append(i['ProjectID'])
+        return submitted_id
+    else:
+        print('There is no submitted project')
+
+def student():
     while True:
         info = my_db.search("login").table
-        id_info = [i for i in info if id in i['ID']]
+        id_info = [i for i in info if val[0] in i['ID']]
         print(f"Hi, {id_info[0]['username']}")
-        notification(id)
+        notification(val[0])
         print(f"What do you want to do?\n"
               f"1. See project",
                 "2. Invite member",
@@ -337,16 +409,51 @@ def student(id):
             find_member()
         elif choices == "0":
             break
+        else:
+            pass
 
-initializing()
-val = login()
+def faculty():
+    while True:
+        info = my_db.search("login").table
+        id_info = [i for i in info if val[0] in i['ID']]
+        print(f"Hi, {id_info[0]['username']}")
+        notification(id)
+        print(f"What do you want to do?\n"
+              f"1. See all project",
+              "2. See submitted report",
+              "3. Evaluation",
+              "4. Grade",
+              "0. Exit", sep='\n')
+        choice = input()
+        if choice == '1':
+            num = 0
+            for i in my_db.search('project').table:
+                num += 1
+                print(f"{num}.")
+                print(f"Title: {i['Title']}")
+                print(f"ProjectID: {i['ProjectID']}")
+        elif choice == '2':
+            sub_project()
+        elif choice == '3':
+            evaluation()
+        elif choice == '4':
+            grade()
+        elif choice == '0':
+            break
+        else:
+            pass
 
-if val[1] == 'admin':
-    admin()
-elif val[1] == 'student':
-    student(val[0])
-    # elif val[1] = 'faculty':
-        # see and do faculty related activities
+while True:
+    initializing()
+    val = login()
+    if val[1] == 'admin':
+        admin()
+        exit()
+    elif val[1] == 'student':
+        student()
+        exit()
+    elif val[1] == 'faculty':
+        faculty()
+        exit()
 
-# once everyhthing is done, make a call to the exit function
-exit()
+
